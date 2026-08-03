@@ -1,0 +1,457 @@
+/* ============================================================
+   DESIGN TOKENS
+   Konsep: "Network Status Dashboard" — identitas Network Engineer
+   diterjemahkan lewat warna status koneksi, tipografi terminal,
+   dan visual topologi jaringan.
+   ============================================================ */
+:root{
+  /* Colors */
+  --bg: #0a1120;
+  --bg-elevated: #101a2e;
+  --bg-elevated-2: #16223a;
+  --border: #223452;
+  --text-primary: #eaf2f7;
+  --text-muted: #8ea3bd;
+  --text-faint: #5c7091;
+
+  --cyan: #2fd8f5;
+  --cyan-dim: #16465a;
+  --green: #3ade7d;
+  --green-dim: #123a29;
+  --amber: #ffb648;
+  --amber-dim: #3a2c10;
+  --magenta: #ff5fa2;
+  --magenta-dim: #3a1530;
+
+  /* Type */
+  --font-display: 'Space Grotesk', 'Segoe UI', sans-serif;
+  --font-body: 'Inter', 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+  --container: 1120px;
+}
+
+*{ margin:0; padding:0; box-sizing:border-box; }
+
+html{ scroll-behavior:smooth; }
+
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
+  *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+}
+
+body{
+  background:
+    radial-gradient(ellipse 900px 500px at 15% -10%, rgba(47,216,245,0.10), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 100% 10%, rgba(255,95,162,0.07), transparent 55%),
+    var(--bg);
+  color:var(--text-primary);
+  font-family:var(--font-body);
+  line-height:1.6;
+  min-height:100vh;
+}
+
+img{ max-width:100%; display:block; }
+a{ color:inherit; text-decoration:none; }
+ul{ list-style:none; }
+
+.wrap{
+  max-width:var(--container);
+  margin:0 auto;
+  padding:0 24px;
+}
+
+.eyebrow{
+  font-family:var(--font-mono);
+  font-size:0.78rem;
+  letter-spacing:0.08em;
+  color:var(--cyan);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:14px;
+  text-transform:uppercase;
+}
+.eyebrow .dot{
+  width:7px; height:7px; border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 0 3px var(--green-dim);
+  animation:pulse-dot 2.2s ease-in-out infinite;
+  flex-shrink:0;
+}
+@keyframes pulse-dot{
+  0%,100%{ box-shadow:0 0 0 3px var(--green-dim); }
+  50%{ box-shadow:0 0 0 6px var(--green-dim); }
+}
+
+h1,h2,h3{ font-family:var(--font-display); font-weight:600; letter-spacing:-0.01em; }
+
+.section-title{
+  font-size:clamp(1.6rem, 3vw, 2.1rem);
+  margin-bottom:8px;
+}
+.section-sub{
+  color:var(--text-muted);
+  font-size:0.98rem;
+  margin-bottom:44px;
+  max-width:520px;
+}
+section{ padding:96px 0; }
+section:first-of-type{ padding-top:0; }
+
+/* ============================================================
+   NAV — "port list" styled sticky bar
+   ============================================================ */
+.nav{
+  position:sticky; top:0; z-index:50;
+  background:rgba(10,17,32,0.82);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+}
+.nav-inner{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 24px;
+  max-width:var(--container);
+  margin:0 auto;
+}
+.nav-id{
+  font-family:var(--font-mono);
+  font-size:0.92rem;
+  color:var(--text-primary);
+  display:flex; align-items:center; gap:9px;
+}
+.nav-id .dot{
+  width:8px; height:8px; border-radius:50%; background:var(--green);
+  box-shadow:0 0 8px var(--green);
+  flex-shrink:0;
+}
+.nav-links{
+  display:flex; gap:28px;
+  font-family:var(--font-mono);
+  font-size:0.82rem;
+}
+.nav-links a{
+  color:var(--text-muted);
+  transition:color .2s;
+  position:relative;
+  padding:4px 0;
+}
+.nav-links a::before{
+  content:'/';
+  color:var(--text-faint);
+  margin-right:4px;
+}
+.nav-links a:hover, .nav-links a:focus-visible{ color:var(--cyan); }
+.nav-links a:focus-visible{ outline:1px solid var(--cyan); outline-offset:4px; }
+
+.nav-toggle{ display:none; }
+
+@media (max-width: 720px){
+  .nav-links{ display:none; }
+}
+
+/* ============================================================
+   HERO — dashboard header + signature network graph
+   ============================================================ */
+.hero{
+  padding:64px 0 40px;
+  display:grid;
+  grid-template-columns:1.1fr 1fr;
+  gap:48px;
+  align-items:center;
+}
+@media (max-width: 900px){
+  .hero{ grid-template-columns:1fr; padding-top:40px; }
+}
+
+.hero-photo-frame{
+  position:relative;
+  width:112px; height:112px;
+  border-radius:50%;
+  margin-bottom:28px;
+}
+.hero-photo-frame::before{
+  content:'';
+  position:absolute; inset:-6px;
+  border-radius:50%;
+  border:1.5px solid var(--green);
+  opacity:0.5;
+  animation:ring-pulse 2.6s ease-in-out infinite;
+}
+@keyframes ring-pulse{
+  0%{ transform:scale(1); opacity:0.55; }
+  70%{ transform:scale(1.22); opacity:0; }
+  100%{ transform:scale(1.22); opacity:0; }
+}
+.hero-photo-frame img{
+  width:100%; height:100%; object-fit:cover; border-radius:50%;
+  border:2px solid var(--bg-elevated-2);
+  position:relative; z-index:1;
+}
+
+.hero h1{
+  font-size:clamp(2.3rem, 5vw, 3.3rem);
+  line-height:1.08;
+  margin-bottom:14px;
+}
+.hero h1 .accent{ color:var(--cyan); }
+
+.hero-role{
+  font-family:var(--font-mono);
+  font-size:1rem;
+  color:var(--amber);
+  margin-bottom:22px;
+}
+
+.hero-desc{
+  color:var(--text-muted);
+  font-size:1.02rem;
+  max-width:460px;
+  margin-bottom:34px;
+}
+
+.hero-cta{
+  display:flex; gap:14px; flex-wrap:wrap;
+}
+.btn{
+  font-family:var(--font-mono);
+  font-size:0.85rem;
+  padding:12px 22px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  display:inline-flex; align-items:center; gap:8px;
+  transition:border-color .2s, background .2s, transform .15s;
+}
+.btn:hover, .btn:focus-visible{ transform:translateY(-1px); }
+.btn:focus-visible{ outline:1px solid var(--cyan); outline-offset:3px; }
+.btn-primary{
+  background:var(--cyan);
+  color:#04141a;
+  border-color:var(--cyan);
+  font-weight:600;
+}
+.btn-primary:hover{ background:#54e2fa; }
+.btn-ghost{ color:var(--text-primary); }
+.btn-ghost:hover{ border-color:var(--cyan); color:var(--cyan); }
+
+/* Network graph signature element */
+.graph-panel{
+  background:var(--bg-elevated);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px 18px 14px;
+  position:relative;
+  overflow:hidden;
+}
+.graph-panel-head{
+  display:flex; justify-content:space-between; align-items:center;
+  font-family:var(--font-mono);
+  font-size:0.72rem;
+  color:var(--text-faint);
+  margin-bottom:8px;
+  letter-spacing:0.04em;
+}
+.graph-panel-head .live{ color:var(--green); display:flex; align-items:center; gap:6px; }
+.graph-panel-head .live .dot{ width:6px; height:6px; border-radius:50%; background:var(--green); box-shadow:0 0 6px var(--green); }
+#network-graph{ width:100%; height:auto; display:block; }
+
+/* ============================================================
+   ABOUT — device info panel
+   ============================================================ */
+.about{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:40px;
+  align-items:start;
+}
+@media (max-width: 800px){ .about{ grid-template-columns:1fr; } }
+
+.about-text p{ color:var(--text-muted); margin-bottom:16px; max-width:480px; }
+.about-text p strong{ color:var(--text-primary); font-weight:600; }
+
+.info-card{
+  background:var(--bg-elevated);
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+}
+.info-card-head{
+  font-family:var(--font-mono);
+  font-size:0.75rem;
+  color:var(--text-faint);
+  padding:14px 20px;
+  border-bottom:1px solid var(--border);
+  letter-spacing:0.06em;
+}
+.info-row{
+  display:flex; justify-content:space-between; gap:16px;
+  padding:16px 20px;
+  border-bottom:1px solid var(--border);
+  font-size:0.92rem;
+}
+.info-row:last-child{ border-bottom:none; }
+.info-row .k{ color:var(--text-faint); font-family:var(--font-mono); font-size:0.8rem; flex-shrink:0; }
+.info-row .v{ color:var(--text-primary); text-align:right; }
+
+/* ============================================================
+   SKILLS — clustered by category, mono tags (not progress bars)
+   ============================================================ */
+.skills-grid{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:20px;
+}
+@media (max-width: 700px){ .skills-grid{ grid-template-columns:1fr; } }
+
+.skill-cluster{
+  background:var(--bg-elevated);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:22px 22px 20px;
+  transition:border-color .2s;
+}
+.skill-cluster:hover{ border-color:var(--cluster-color, var(--cyan)); }
+.skill-cluster-title{
+  display:flex; align-items:center; gap:10px;
+  font-family:var(--font-mono);
+  font-size:0.85rem;
+  color:var(--cluster-color, var(--cyan));
+  margin-bottom:16px;
+  text-transform:uppercase;
+  letter-spacing:0.04em;
+}
+.skill-cluster-title .node{
+  width:8px; height:8px; border-radius:50%;
+  background:var(--cluster-color, var(--cyan));
+  box-shadow:0 0 8px var(--cluster-color, var(--cyan));
+  flex-shrink:0;
+}
+.skill-tags{ display:flex; flex-wrap:wrap; gap:8px; }
+.skill-tag{
+  font-family:var(--font-mono);
+  font-size:0.8rem;
+  padding:6px 12px;
+  border-radius:6px;
+  background:var(--bg-elevated-2);
+  border:1px solid var(--border);
+  color:var(--text-primary);
+}
+
+/* ============================================================
+   EXPERIENCE — connection log timeline
+   ============================================================ */
+.log{
+  border-left:1px solid var(--border);
+  margin-left:6px;
+}
+.log-entry{
+  position:relative;
+  padding:0 0 36px 32px;
+}
+.log-entry:last-child{ padding-bottom:0; }
+.log-entry::before{
+  content:'';
+  position:absolute;
+  left:-6.5px; top:4px;
+  width:12px; height:12px;
+  border-radius:50%;
+  background:var(--bg);
+  border:2px solid var(--green);
+}
+.log-time{
+  font-family:var(--font-mono);
+  font-size:0.75rem;
+  color:var(--green);
+  margin-bottom:6px;
+  letter-spacing:0.04em;
+}
+.log-entry h3{ font-size:1.15rem; margin-bottom:4px; }
+.log-org{ color:var(--text-muted); font-size:0.92rem; margin-bottom:10px; }
+.log-desc{ color:var(--text-muted); font-size:0.92rem; max-width:520px; }
+
+/* ============================================================
+   PROJECTS — deployed service cards
+   ============================================================ */
+.projects-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:24px;
+}
+@media (max-width: 800px){ .projects-grid{ grid-template-columns:1fr; } }
+
+.project-card{
+  background:var(--bg-elevated);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:26px 26px 24px;
+  display:flex; flex-direction:column;
+  transition:transform .2s, border-color .2s;
+}
+.project-card:hover{ transform:translateY(-3px); border-color:var(--cyan); }
+
+.project-status{
+  display:inline-flex; align-items:center; gap:7px;
+  font-family:var(--font-mono);
+  font-size:0.7rem;
+  color:var(--green);
+  background:var(--green-dim);
+  padding:5px 11px;
+  border-radius:20px;
+  width:fit-content;
+  margin-bottom:16px;
+  letter-spacing:0.04em;
+}
+.project-status .dot{ width:6px; height:6px; border-radius:50%; background:var(--green); }
+
+.project-card h3{ font-size:1.3rem; margin-bottom:10px; }
+.project-card p{ color:var(--text-muted); font-size:0.94rem; margin-bottom:20px; flex-grow:1; }
+
+.project-stack{ display:flex; flex-wrap:wrap; gap:7px; }
+.project-stack span{
+  font-family:var(--font-mono);
+  font-size:0.74rem;
+  padding:5px 10px;
+  border-radius:5px;
+  background:var(--bg-elevated-2);
+  border:1px solid var(--border);
+  color:var(--cyan);
+}
+
+/* ============================================================
+   CONTACT — "establish connection"
+   ============================================================ */
+.contact-panel{
+  background:var(--bg-elevated);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:52px 40px;
+  text-align:center;
+}
+@media (max-width:600px){ .contact-panel{ padding:40px 22px; } }
+
+.contact-panel h2{ font-size:clamp(1.6rem, 3.4vw, 2.2rem); margin-bottom:12px; }
+.contact-panel p{ color:var(--text-muted); max-width:440px; margin:0 auto 30px; }
+
+.contact-channels{
+  display:flex; justify-content:center; gap:14px; flex-wrap:wrap;
+  margin-bottom:8px;
+}
+
+.contact-note{
+  font-family:var(--font-mono);
+  font-size:0.75rem;
+  color:var(--text-faint);
+  margin-top:22px;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer{
+  border-top:1px solid var(--border);
+  padding:30px 0;
+  text-align:center;
+  color:var(--text-faint);
+  font-family:var(--font-mono);
+  font-size:0.78rem;
+}
